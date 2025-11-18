@@ -1,0 +1,69 @@
+/* Content script styles for IP Guardian */
+
+.ip-guardian-protected {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+  position: relative;
+}
+
+.ip-guardian-indicator {
+  position: absolute !important;
+  top: 5px !important;
+  right: 5px !important;
+  width: 28px !important;
+  height: 28px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border-radius: 50% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 14px !important;
+  z-index: 999999 !important;
+  box-shadow: 0 2px 12px rgba(102, 126, 234, 0.4) !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+.ip-guardian-indicator:hover {
+  transform: scale(1.1) !important;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.6) !important;
+}
+
+.ip-guardian-toast {
+  position: fixed !important;
+  top: 20px !important;
+  right: 20px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: white !important;
+  padding: 16px 24px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3) !important;
+  z-index: 999999 !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  font-size: 14px !important;
+  animation: slideIn 0.3s ease !important;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.ip-guardian-highlight {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+  }
+}
