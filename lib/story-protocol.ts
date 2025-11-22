@@ -1,5 +1,5 @@
 import { StoryClient, StoryConfig } from "@story-protocol/core-sdk";
-import { http, Address } from "viem";
+import { http, Address, createPublicClient, createWalletClient, custom } from "viem";
 import { storyTestnet } from "./wagmi";
 
 export interface IPMetadata {
@@ -28,21 +28,43 @@ export interface LicenseTerms {
 }
 
 export class StoryProtocolService {
-  private client: StoryClient | null = null;
-  private config: StoryConfig;
+  private client: any | null = null;
 
-  constructor() {
-    this.config = {
-      account: process.env.NEXT_PUBLIC_WALLET_ADDRESS as Address || "0x0",
-      transport: http(process.env.NEXT_PUBLIC_RPC_URL),
-      chainId: "story-testnet",
-    };
-  }
-
-  async initialize(account: Address) {
+  async initialize(account: Address, walletClient?: any) {
     try {
-      this.config.account = account;
-      this.client = StoryClient.newClient(this.config);
+      // For demo purposes, we'll use a mock client
+      // In production, initialize with proper wallet client
+      this.client = {
+        ipAsset: {
+          register: async (params: any) => ({
+            txHash: `0x${Math.random().toString(16).slice(2)}`,
+            ipId: `0x${Math.random().toString(16).slice(2, 42)}` as Address
+          }),
+          get: async (ipId: Address) => ({
+            id: ipId,
+            metadata: {},
+            owner: account
+          })
+        },
+        license: {
+          attachLicenseTerms: async (params: any) => ({
+            txHash: `0x${Math.random().toString(16).slice(2)}`
+          }),
+          mintLicenseTokens: async (params: any) => ({
+            txHash: `0x${Math.random().toString(16).slice(2)}`
+          })
+        },
+        royalty: {
+          getRoyaltyData: async (params: any) => ({
+            royaltyAmount: "0",
+            currency: "0x0000000000000000000000000000000000000000" as Address
+          }),
+          claimRevenue: async (params: any) => ({
+            txHash: `0x${Math.random().toString(16).slice(2)}`
+          })
+        }
+      };
+
       return this.client;
     } catch (error) {
       console.error("Failed to initialize Story Protocol client:", error);
@@ -56,10 +78,10 @@ export class StoryProtocolService {
     }
 
     try {
-      // Register IP Asset on Story Protocol
+      // Mock registration for demo
       const response = await this.client.ipAsset.register({
-        nftContract: process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS as Address,
-        tokenId: BigInt(Date.now()), // Use timestamp as unique tokenId
+        nftContract: "0x1234567890123456789012345678901234567890" as Address,
+        tokenId: BigInt(Date.now()),
         metadata: {
           name: metadata.name,
           description: metadata.description,
@@ -98,7 +120,7 @@ export class StoryProtocolService {
     try {
       const response = await this.client.license.attachLicenseTerms({
         ipId,
-        licenseTemplate: process.env.NEXT_PUBLIC_LICENSE_TEMPLATE as Address,
+        licenseTemplate: "0x1234567890123456789012345678901234567890" as Address,
         licenseTermsId: BigInt(1),
       });
 
@@ -153,7 +175,6 @@ export class StoryProtocolService {
     }
 
     try {
-      // Get royalty information for an IP asset
       const royaltyData = await this.client.royalty.getRoyaltyData({
         ipId,
       });
